@@ -11,6 +11,7 @@ from streams import blocks
 
 class FlexPage(Page):
     """Fleixble Page Class"""
+
     template = "flex/flex_page.html"
 
     content = StreamField(
@@ -18,16 +19,17 @@ class FlexPage(Page):
             ("title_and_text", blocks.TitleAndTextBlock()),
             ("full_richtext", blocks.RichTextBlock()),
             ("simple_richtext", blocks.SimpleRichTextBlock()),
+            ("cards", blocks.CardBlock()),
         ],
         null=True,
-        blank=True
+        blank=True,
     )
 
     subtitle = models.CharField(max_length=100, null=True, blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel("subtitle"),
-        StreamFieldPanel("content")
+        StreamFieldPanel("content"),
     ]
 
     class Meta:  # noqa
