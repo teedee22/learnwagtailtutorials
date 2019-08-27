@@ -1,15 +1,36 @@
 from django.db import models
 
-from wagtail.core.models import Page
+from modelcluster.fields import ParentalKey
+
+from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     PageChooserPanel,
     StreamFieldPanel,
+    InlinePanel,
+    MultiFieldPanel,
 )
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from streams import blocks
+
+
+class HomePageCarouselImages(Orderable):
+    """Between one and five images for the homepage carousel"""
+
+    page = ParentalKey("home.HomePage", related_name="carousel_images")
+    carousel_image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,  # the page already exists so this is the default value
+        blank=False,  # The field cannot be blank
+        on_delete=models.SET_NULL,  # When image is deleted, we don't want anything else to be deleted
+        related_name="+",  # Not using a related name
+    )
+
+    panels = [
+        ImageChooserPanel("carousel_image")
+    ]
 
 
 class HomePage(Page):
@@ -37,23 +58,18 @@ class HomePage(Page):
         related_name="+",
     )
 
-    content = StreamField(
-        [
-            ("title_and_text", blocks.TitleAndTextBlock()),
-            ("full_richtext", blocks.RichTextBlock()),
-            ("simple_richtext", blocks.SimpleRichTextBlock()),
-            ("cards", blocks.CardBlock()),
-            ("cta", blocks.CTABlock()),
-        ],
-        null=True,
-        blank=True,
-    )
+    content = StreamField([("cta", blocks.CTABlock())], null=True, blank=True)
 
     content_panels = Page.content_panels + [
-        FieldPanel("banner_title"),
-        FieldPanel("banner_subtitle"),
-        ImageChooserPanel("banner_image"),
-        PageChooserPanel("banner_cta"),
+        MultiFieldPanel([
+            FieldPanel("banner_title"),
+            FieldPanel("banner_subtitle"),
+            ImageChooserPanel("banner_image"),
+            PageChooserPanel("banner_cta"),
+        ], heading="Banner Options"),
+        MultiFieldPanel([
+            InlinePanel("carousel_images", max_num=5, min_num=1, label="Image"),
+        ], heading="Carousel Images"),
         StreamFieldPanel("content"),
     ]
 
