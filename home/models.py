@@ -1,4 +1,5 @@
 from django.db import models
+from django.shortcuts import render
 
 from modelcluster.fields import ParentalKey
 
@@ -12,6 +13,7 @@ from wagtail.admin.edit_handlers import (
     MultiFieldPanel,
 )
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 
 from streams import blocks
 
@@ -33,7 +35,7 @@ class HomePageCarouselImages(Orderable):
     ]
 
 
-class HomePage(Page):
+class HomePage(RoutablePageMixin, Page):
     """Home page model"""
 
     # You can be explicit with where the template is stored
@@ -76,3 +78,10 @@ class HomePage(Page):
     class Meta:
         verbose_name = "Home Page"
         verbose_name_plural = "Home pages"
+
+    # Routable page which lives on the home page
+    @route(r'^subscribe/$')
+    def the_subscribe_page(self, request, *args, **kwargs):
+        context = self.get_context(request, *args, **kwargs)
+        context['test'] = "hello world 123"
+        return render(request, "home/subscribe.html", context)

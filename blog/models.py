@@ -1,14 +1,16 @@
 from django.db import models
+from django.shortcuts import render
 
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.core.models import Page
 from wagtail.core.fields import StreamField
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 
 from streams import blocks
 
 
-class BlogListingPage(Page):
+class BlogListingPage(RoutablePageMixin, Page):
     """Listing page lists all the Blog Detail Pags"""
 # Getting all the blog detail pages and putting them into this page
     template = "blog/blog_listing_page.html"
@@ -28,7 +30,18 @@ class BlogListingPage(Page):
         """Adding custom stuff to our context."""
         context = super().get_context(request)
         context['posts'] = BlogDetailPage.objects.live().public()
+        # This gives the reverse of latest blog subpage
+        context["special_link"] = self.reverse_subpage('latest_blog_posts')
         return context
+
+    @route(r'^latest/?$')
+    def latest_blog_posts(self, request, *args, **kwargs):
+        context = self.get_context(request, *args, **kwargs)
+        # Could create a new context for latest posts
+        context['latest_posts'] = BlogDetailPage.objects.live().public()[:1]
+        # Or change the context to show only the last x post(s)
+        context["posts"] = context["posts"][:1]
+        return render(request, "blog/latest_posts.html", context)
 
 
 class BlogDetailPage(Page):
