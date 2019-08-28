@@ -12,7 +12,8 @@ from streams import blocks
 
 class BlogListingPage(RoutablePageMixin, Page):
     """Listing page lists all the Blog Detail Pags"""
-# Getting all the blog detail pages and putting them into this page
+
+    # Getting all the blog detail pages and putting them into this page
     template = "blog/blog_listing_page.html"
 
     custom_title = models.CharField(
@@ -22,30 +23,45 @@ class BlogListingPage(RoutablePageMixin, Page):
         help_text="Overwrites the default title",
     )
 
-    content_panels = Page.content_panels + [
-        FieldPanel("custom_title"),
-    ]
+    content_panels = Page.content_panels + [FieldPanel("custom_title")]
 
     def get_context(self, request, *args, **kwargs):
         """Adding custom stuff to our context."""
         context = super().get_context(request)
-        context['posts'] = BlogDetailPage.objects.live().public()
+        context["posts"] = BlogDetailPage.objects.live().public()
         # This gives the reverse of latest blog subpage
-        context["special_link"] = self.reverse_subpage('latest_blog_posts')
+        context["special_link"] = self.reverse_subpage("latest_blog_posts")
         return context
 
-    @route(r'^latest/?$')
+    @route(r"^latest/$")
     def latest_blog_posts(self, request, *args, **kwargs):
         context = self.get_context(request, *args, **kwargs)
         # Could create a new context for latest posts
-        context['latest_posts'] = BlogDetailPage.objects.live().public()[:1]
+        context["latest_posts"] = BlogDetailPage.objects.live().public()[:1]
         # Or change the context to show only the last x post(s)
         context["posts"] = context["posts"][:1]
         return render(request, "blog/latest_posts.html", context)
 
+    def get_sitemap_urls(self, request):
+        # Uncomment to have no sitemap for this page
+        # return []
+        sitemap = super().get_sitemap_urls(request)
+        sitemap.append(
+            {
+                "location": self.full_url
+                + self.reverse_subpage("latest_blog_posts"),
+                "lastmod": (
+                    self.last_published_at or self.latest_revision_created_at
+                ),
+                "priority": 0.9,
+            }
+        )
+        return sitemap
+
 
 class BlogDetailPage(Page):
     """Blog Detail Page"""
+
     custom_title = models.CharField(
         max_length=100,
         blank=False,
@@ -65,7 +81,7 @@ class BlogDetailPage(Page):
             ("full_richtext", blocks.RichTextBlock()),
             ("simple_richtext", blocks.SimpleRichTextBlock()),
             ("cards", blocks.CardBlock()),
-            ("cta", blocks.CTABlock())
+            ("cta", blocks.CTABlock()),
         ],
         null=True,
         blank=True,
