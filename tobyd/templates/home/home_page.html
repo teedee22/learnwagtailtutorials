@@ -20,7 +20,7 @@
     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
             {% for cycle in self.carousel_images.all %}
-            {% image cycle.carousel_image fill-900x400 as img %}
+            {% image cycle.carousel_image fill-500x200 as img %}
                 <div class="carousel-item {% if forloop.counter == 1 %} active {% endif %}">
                     <img src="{{ img.url }}" class="d-block w-100" alt="{{ img.alt }}">
                 </div>
@@ -42,17 +42,28 @@
 
     <!-- Social media footer -->
     <div class="container">
-        {% if settings.site_settings.SocialMediaSettings.facebook %}
-            <a href="{{ settings.site_settings.SocialMediaSettings.facebook }}"
-            <i class="fab fa-facebook"></i></a>
-        {% endif %}
-        {% if settings.site_settings.SocialMediaSettings.twitter %}
-            <a href="{{ settings.site_settings.SocialMediaSettings.twitter }}"
-            <i class="fab fa-twitter"></i></a>
-        {% endif %}
-        {% if settings.site_settings.SocialMediaSettings.youtube %}
-            <a href="{{ settings.site_settings.SocialMediaSettings.youtube }}"
-            <i class="fab fa-youtube"></i></a>
+        <div class="row">
+            <div class="col-12 text-center">
+                {% if settings.site_settings.SocialMediaSettings.facebook %}
+                    <a href="{{ settings.site_settings.SocialMediaSettings.facebook }}"
+                    <i class="fab fa-facebook"></i></a>
+                {% endif %}
+                {% if settings.site_settings.SocialMediaSettings.twitter %}
+                    <a href="{{ settings.site_settings.SocialMediaSettings.twitter }}"
+                    <i class="fab fa-twitter"></i></a>
+                {% endif %}
+                {% if settings.site_settings.SocialMediaSettings.youtube %}
+                    <a href="{{ settings.site_settings.SocialMediaSettings.youtube }}"
+                    <i class="fab fa-youtube"></i></a>
+                {% endif %}
+            </div>
+        </div>
+        {% if settings.site_settings.SocialMediaSettings.footer %}
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>{{ settings.site_settings.SocialMediaSettings.footer }}</p>
+            </div>
+        </div>
         {% endif %}
     </div>
 {% endblock content %}
