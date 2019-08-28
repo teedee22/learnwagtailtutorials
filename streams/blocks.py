@@ -90,3 +90,31 @@ class CTABlock(blocks.StructBlock):
         template = "streams/cta_block.html"
         icon = "placeholder"
         label = "Call to Action"
+
+# This is the way to take the logic out of templates and maintain it in python
+# See value class in button block below
+class LinkStructValue(blocks.StructValue):
+    """Additional logic for our urls"""
+
+    def url(self):
+        button_page = self.get("button_page")
+        button_url = self.get("button_url")
+        if button_page:
+            return button_page.url
+        elif button_url:
+            return button_url
+
+        return None
+
+
+class ButtonBlock(blocks.StructBlock):
+    """An external or internal URL."""
+
+    button_page = blocks.PageChooserBlock(required=False, help_text="if selected, this url will be used first")
+    button_url = blocks.URLBlock(required=False, help_text="if added, this url will be used second to the button page")
+
+    class Meta:  # noqa
+        template = "streams/button_block.html"
+        icon = "placeholder"
+        label = "Single Button"
+        value_class = LinkStructValue
