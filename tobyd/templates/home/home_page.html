@@ -3,8 +3,9 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 {% block content %}
 
-    {% image self.banner_image fill-1200x500 as img %}
 
+    <!-- Welcome banner jumbotron -->
+    {% image self.banner_image fill-1200x500 as img %}
     <div class="jumbotron" style="background-image: url('{{ img.url }}'); background-size: cover; background-position: center center; color: white; !important">
         <h1 class="display-1">{{self.banner_title}}</h1>
         <div class="lead">{{ self.banner_subtitle|richtext }}</div>
@@ -15,6 +16,7 @@
     </div>
 
 
+    <!-- Image Carousel -->
     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
             {% for cycle in self.carousel_images.all %}
@@ -33,9 +35,24 @@
         </a>
     </div>
 
-
+    <!-- Streamfields content -->
     {% for block in page.content %}
         {% include_block block %}
     {% endfor %}
 
+    <!-- Social media footer -->
+    <div class="container">
+        {% if settings.site_settings.SocialMediaSettings.facebook %}
+            <a href="{{ settings.site_settings.SocialMediaSettings.facebook }}"
+            <i class="fab fa-facebook"></i></a>
+        {% endif %}
+        {% if settings.site_settings.SocialMediaSettings.twitter %}
+            <a href="{{ settings.site_settings.SocialMediaSettings.twitter }}"
+            <i class="fab fa-twitter"></i></a>
+        {% endif %}
+        {% if settings.site_settings.SocialMediaSettings.youtube %}
+            <a href="{{ settings.site_settings.SocialMediaSettings.youtube }}"
+            <i class="fab fa-youtube"></i></a>
+        {% endif %}
+    </div>
 {% endblock content %}
