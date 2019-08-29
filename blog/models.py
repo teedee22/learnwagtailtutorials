@@ -1,7 +1,8 @@
+from django import forms
 from django.db import models
 from django.shortcuts import render
 
-from modelcluster.fields import ParentalKey
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
@@ -22,14 +23,9 @@ class BlogAuthorsOrderable(Orderable):
     """This allows us to select one or more blog authors from snippets"""
 
     page = ParentalKey("blog.BlogDetailPage", related_name="blog_authors")
-    author = models.ForeignKey(
-        "blog.BlogAuthor",
-        on_delete=models.CASCADE,
-    )
+    author = models.ForeignKey("blog.BlogAuthor", on_delete=models.CASCADE)
 
-    panels = [
-        SnippetChooserPanel("author"),
-    ]
+    panels = [SnippetChooserPanel("author")]
 
 
 class BlogAuthor(models.Model):
@@ -64,6 +60,31 @@ class BlogAuthor(models.Model):
 register_snippet(BlogAuthor)
 
 
+class BlogCategory(models.Model):
+    """Blog category for a snippet."""
+
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(
+        verbose_name="slug",
+        allow_unicode=True,
+        max_length=255,
+        help_text="A slug to identify posts by this category",
+    )
+
+    panels = [FieldPanel("name"), FieldPanel("slug")]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:  # noqa
+        verbose_name = "Blog category"
+        verbose_name_plural = "Blog categories"
+        ordering = ["name"]
+
+
+register_snippet(BlogCategory)
+
+
 class BlogListingPage(RoutablePageMixin, Page):
     """Listing page lists all the Blog Detail Pags"""
 
@@ -85,6 +106,17 @@ class BlogListingPage(RoutablePageMixin, Page):
         context["posts"] = BlogDetailPage.objects.live().public()
         # This gives the reverse of latest blog subpage
         context["special_link"] = self.reverse_subpage("latest_blog_posts")
+        context["categories"] = BlogCategory.objects.all
+        if (
+            BlogDetailPage.objects.live()
+            .public()
+            .filter(categories__slug__in=[request.GET.get("category")])
+        ):
+            context["posts"] = (
+                BlogDetailPage.objects.live()
+                .public()
+                .filter(categories__slug__in=[request.GET.get("category")])
+            )
         return context
 
     @route(r"^latest/$")
@@ -143,15 +175,24 @@ class BlogDetailPage(Page):
         null=True,
         blank=True,
     )
+
+    categories = ParentalManyToManyField("blog.BlogCategory", blank=True)
+
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
         ImageChooserPanel("blog_image"),
         FieldPanel("description"),
         MultiFieldPanel(
             [
-                InlinePanel("blog_authors", label="Author", min_num=1, max_num=10),
+                InlinePanel(
+                    "blog_authors", label="Author", min_num=1, max_num=10
+                )
             ],
-            heading="Author(s)"
+            heading="Author(s)",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("categories", widget=forms.CheckboxSelectMultiple)],
+            heading="Categories",
         ),
         StreamFieldPanel("content"),
     ]

@@ -5,45 +5,53 @@
 
 {% block content %}
 
-    <div class="container">
-        <div class="row">
-            <div class="col text-center">
-                {% image self.blog_image fill-300x300 as banner %}
-                <img src="{{ banner.url }}" alt="{{ banner.alt }}" >
-            </div>
-        </div>
-        <div class="row">
-            <div class="col text-center">
-                <h1> {{ self.custom_title }} </h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-                {% for block in page.content %}
-                    {% include_block block %}
-                {% endfor %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col text-center">
-                <h3>Authored by:</h3>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-                    {% for author in self.blog_authors.all %}
-                        {% image author.author.image fill-100x100 as img %}
-                        <div class="col-2 text-center">
-                            <ul style='list-style: none;'>
-                                <img src="{{ img.url }}" alt="{{ img.alt }}">
-                                <li>{{ author.author.name }}</li>
-                                    {% if author.author.website %}
-                                        <li><a href="{{ author.author.website }}">{{ author.author.name }}</a></li>
-                                    {% endif %}
-                            </ul>
-                        </div>
-                    {% endfor %}
-                </ul>
-            </div>
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            {% image self.blog_image fill-300x300 as banner %}
+            <img src="{{ banner.url }}" class="rounded-circle" alt="{{ banner.alt }}" >
         </div>
     </div>
+    <div class="row">
+        <div class="col text-center">
+            <h1> {{ self.custom_title }} </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <ul style='list-style: none;'>
+                {% for cat in self.categories.all %}
+                    <a href="{{ self.get_parent.url }}?category={{ cat.slug }}"><li> {{ cat.name }} </li></a>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+            {% for block in page.content %}
+                {% include_block block %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <h3>Authored by:</h3>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        {% for author in self.blog_authors.all %}
+            {% image author.author.image fill-100x100 as img %}
+            <div class="col-2 text-center">
+                <ul style='list-style: none;'>
+                    <img src="{{ img.url }}" class="rounded-circle" alt="{{ img.alt }}">
+                    <li>{{ author.author.name }}</li>
+                        {% if author.author.website %}
+                            <li><a href="{{ author.author.website }}">{{ author.author.name }}</a></li>
+                        {% endif %}
+                </ul>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
 {% endblock content %}

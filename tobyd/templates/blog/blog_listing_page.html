@@ -3,8 +3,15 @@
 {% load wagtailimages_tags wagtailroutablepage_tags wagtailcore_tags %}
 
 {% block content %}
-
-{{special_link}}
+<div class="row">
+    <div class="col text-center">
+        <ul style='list-style: none;'>
+            {% for cat in categories %}
+                <a href="?category={{ cat.slug }}"><li> {{ cat.name }} </li></a>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 <a href="{% routablepageurl page "latest_blog_posts" %}">View latest posts only</a>
 
 <div class="container">
