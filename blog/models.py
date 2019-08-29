@@ -1,4 +1,5 @@
 from django import forms
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from django.shortcuts import render
 
@@ -103,7 +104,23 @@ class BlogListingPage(RoutablePageMixin, Page):
     def get_context(self, request, *args, **kwargs):
         """Adding custom stuff to our context."""
         context = super().get_context(request)
-        context["posts"] = BlogDetailPage.objects.live().public()
+        all_posts = (
+            BlogDetailPage.objects.live()
+            .public()
+            .order_by("-first_published_at")
+        )
+        # Adding paginator to blog listing page:
+        paginator = Paginator(all_posts, 3)  # todo change to five per page
+        page = request.GET.get("page")
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except EmptyPage:
+            posts = paginator.page(paginator.num_pages)
+
+
+        context["posts"] = posts
         # This gives the reverse of latest blog subpage
         context["special_link"] = self.reverse_subpage("latest_blog_posts")
         context["categories"] = BlogCategory.objects.all
@@ -127,7 +144,7 @@ class BlogListingPage(RoutablePageMixin, Page):
         # Could create a new context for latest posts
         context["latest_posts"] = BlogDetailPage.objects.live().public()[:1]
         # Or change the context to show only the last x post(s)
-        context["posts"] = context["posts"][:1]
+        context["posts"] = context["posts"][:3]
         return render(request, "blog/latest_posts.html", context)
 
     def get_sitemap_urls(self, request):
@@ -215,7 +232,7 @@ class ArticleBlogPage(BlogDetailPage):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        help_text="Best size for this immage will be 200x400"
+        help_text="Best size for this immage will be 200x400",
     )
 
     content_panels = Page.content_panels + [

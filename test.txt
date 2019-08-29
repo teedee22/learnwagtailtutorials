@@ -1,0 +1,63 @@
+diff --git a/blog/__pycache__/models.cpython-37.pyc b/blog/__pycache__/models.cpython-37.pyc
+index bf9c557..cf83c97 100644
+Binary files a/blog/__pycache__/models.cpython-37.pyc and b/blog/__pycache__/models.cpython-37.pyc differ
+diff --git a/blog/models.py b/blog/models.py
+index f19d375..5c56838 100644
+--- a/blog/models.py
++++ b/blog/models.py
+@@ -1,4 +1,5 @@
+ from django import forms
++from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+ from django.db import models
+ from django.shortcuts import render
+ 
+@@ -103,6 +104,12 @@ class BlogListingPage(RoutablePageMixin, Page):
+     def get_context(self, request, *args, **kwargs):
+         """Adding custom stuff to our context."""
+         context = super().get_context(request)
++        all_posts = (
++            BlogDetailPage.objects.live()
++            .public()
++            .order_by("-first_published_at")
++        )
++        paginator = Paginator(all_posts, 2)  # todo change to five per page
+         context["posts"] = BlogDetailPage.objects.live().public()
+         # This gives the reverse of latest blog subpage
+         context["special_link"] = self.reverse_subpage("latest_blog_posts")
+@@ -127,7 +134,7 @@ class BlogListingPage(RoutablePageMixin, Page):
+         # Could create a new context for latest posts
+         context["latest_posts"] = BlogDetailPage.objects.live().public()[:1]
+         # Or change the context to show only the last x post(s)
+-        context["posts"] = context["posts"][:1]
++        context["posts"] = context["posts"][:3]
+         return render(request, "blog/latest_posts.html", context)
+ 
+     def get_sitemap_urls(self, request):
+@@ -215,7 +222,7 @@ class ArticleBlogPage(BlogDetailPage):
+         blank=True,
+         null=True,
+         on_delete=models.SET_NULL,
+-        help_text="Best size for this immage will be 200x400"
++        help_text="Best size for this immage will be 200x400",
+     )
+ 
+     content_panels = Page.content_panels + [
+diff --git a/db.sqlite3 b/db.sqlite3
+index c3d0a0d..4781256 100644
+Binary files a/db.sqlite3 and b/db.sqlite3 differ
+diff --git a/tobyd/templates/blog/latest_posts.html b/tobyd/templates/blog/latest_posts.html
+index c74f48e..0cab0ab 100644
+--- a/tobyd/templates/blog/latest_posts.html
++++ b/tobyd/templates/blog/latest_posts.html
+@@ -7,9 +7,9 @@
+ <h1>Latest Posts</h1>
+ <div class="container">
+     {% for post in posts %}
+-        <div class="row">
++        <div class="row py-3">
+             <div class="col-sm-5">
+-                {% image post.blog_image fill-250x250 as blog_img %}
++                {% image post.banner_image fill-250x250 as blog_img %}
+                 <a href="{{ post.url }}"><img src="{{ blog_img.url }}" alt="{{ blog_img.alt }}"></a>
+             </div>
+             <div class="col-sm-7">
