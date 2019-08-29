@@ -107,6 +107,8 @@ class BlogListingPage(RoutablePageMixin, Page):
         # This gives the reverse of latest blog subpage
         context["special_link"] = self.reverse_subpage("latest_blog_posts")
         context["categories"] = BlogCategory.objects.all
+
+        # If there is a get request on category name, return posts from just that category
         if (
             BlogDetailPage.objects.live()
             .public()
