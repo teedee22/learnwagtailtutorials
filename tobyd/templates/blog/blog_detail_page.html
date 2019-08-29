@@ -4,15 +4,19 @@
 {% load wagtailcore_tags %}
 
 {% block content %}
-    {% image self.blog_image fill-300x400 as banner %}
-    <img src="{{ banner.url }}" alt="{{ banner.alt }}" style='width: 100%; height: auto;'>
 
     <div class="container">
-        <div class="text-center">
-            <h1> {{ self.custom_title }} </h1>
+        <div class="row">
+            <div class="col text-center">
+                {% image self.blog_image fill-300x300 as banner %}
+                <img src="{{ banner.url }}" alt="{{ banner.alt }}" >
+            </div>
         </div>
-    </div>
-    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <h1> {{ self.custom_title }} </h1>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
                 {% for block in page.content %}
