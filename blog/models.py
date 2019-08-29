@@ -7,7 +7,7 @@ from wagtail.admin.edit_handlers import (
     MultiFieldPanel,
 )
 from wagtail.core.models import Page
-from wagtail.core.fields import StreamField
+from wagtail.core.fields import RichTextField, StreamField
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.snippets.models import register_snippet
@@ -105,6 +105,11 @@ class BlogDetailPage(Page):
         null=False,
         help_text="Overwrites the default title",
     )
+
+    description = RichTextField(
+        features=[], blank=True, null=True
+    )
+
     blog_image = models.ForeignKey(
         "wagtailimages.Image",
         blank=False,
@@ -126,5 +131,6 @@ class BlogDetailPage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
         ImageChooserPanel("blog_image"),
+        FieldPanel("description"),
         StreamFieldPanel("content"),
     ]
