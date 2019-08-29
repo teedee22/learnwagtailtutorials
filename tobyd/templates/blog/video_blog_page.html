@@ -1,0 +1,12 @@
+{% extends "blog/blog_detail_page.html" %}
+
+
+{% block video_blog %}
+{% if self.youtube_video_id %}
+<div class="row">
+    <div class="col-12 text-center">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ self.youtube_video_id }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

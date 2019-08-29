@@ -148,7 +148,7 @@ class BlogListingPage(RoutablePageMixin, Page):
 
 
 class BlogDetailPage(Page):
-    """Blog Detail Page"""
+    """Parental Blog Detail Page."""
 
     custom_title = models.CharField(
         max_length=100,
@@ -159,7 +159,7 @@ class BlogDetailPage(Page):
 
     description = RichTextField(features=[], blank=True, null=True)
 
-    blog_image = models.ForeignKey(
+    banner_image = models.ForeignKey(
         "wagtailimages.Image",
         blank=False,
         null=True,
@@ -182,7 +182,7 @@ class BlogDetailPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
-        ImageChooserPanel("blog_image"),
+        ImageChooserPanel("banner_image"),
         FieldPanel("description"),
         MultiFieldPanel(
             [
@@ -196,5 +196,73 @@ class BlogDetailPage(Page):
             [FieldPanel("categories", widget=forms.CheckboxSelectMultiple)],
             heading="Categories",
         ),
+        StreamFieldPanel("content"),
+    ]
+
+
+# First subclassed blog post page
+
+
+class ArticleBlogPage(BlogDetailPage):
+    """A subclassed blog post page for articles"""
+
+    template = "blog/article_blog_page.html"
+
+    subtitle = models.CharField(max_length=100, blank=True, null=True)
+
+    intro_image = models.ForeignKey(
+        "wagtailimages.Image",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text="Best size for this immage will be 200x400"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("custom_title"),
+        FieldPanel("subtitle"),
+        ImageChooserPanel("intro_image"),
+        ImageChooserPanel("banner_image"),
+        FieldPanel("description"),
+        MultiFieldPanel(
+            [
+                InlinePanel(
+                    "blog_authors", label="Author", min_num=1, max_num=10
+                )
+            ],
+            heading="Author(s)",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("categories", widget=forms.CheckboxSelectMultiple)],
+            heading="Categories",
+        ),
+        StreamFieldPanel("content"),
+    ]
+
+
+class VideoBlogPage(BlogDetailPage):
+    """Video subclassed page"""
+
+    template = "blog/video_blog_page.html"
+
+    youtube_video_id = models.CharField(max_length=50)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("custom_title"),
+        ImageChooserPanel("banner_image"),
+        FieldPanel("description"),
+        MultiFieldPanel(
+            [
+                InlinePanel(
+                    "blog_authors", label="Author", min_num=1, max_num=10
+                )
+            ],
+            heading="Author(s)",
+        ),
+        MultiFieldPanel(
+            [FieldPanel("categories", widget=forms.CheckboxSelectMultiple)],
+            heading="Categories",
+        ),
+        FieldPanel("youtube_video_id"),
         StreamFieldPanel("content"),
     ]

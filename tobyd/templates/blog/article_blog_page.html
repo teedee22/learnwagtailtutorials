@@ -1,0 +1,24 @@
+{% extends "blog/blog_detail_page.html" %}
+
+
+{% block article_subtitle %}
+{% if self.subtitle %}
+<div class="row">
+    <div class="col text-center">
+        <i><h3>{{ self.subtitle }}</h3></i>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block article_image %}
+{% if self.intro_image %}
+    {% load wagtailimages_tags %}
+    {% image self.intro_image fill-200x200 as img %}
+    <div class="row justify-content-center">
+        <div class="col text-center">
+            <img src="{{ img.url }}" alt="{{ img.alt }}">
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

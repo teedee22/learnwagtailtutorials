@@ -6,17 +6,31 @@
 {% block content %}
 
 <div class="container">
+
+    <!-- Row containing banner image -->
     <div class="row">
         <div class="col text-center">
-            {% image self.blog_image fill-300x300 as banner %}
+            {% image self.banner_image fill-300x300 as banner %}
             <img src="{{ banner.url }}" class="rounded-circle" alt="{{ banner.alt }}" >
         </div>
     </div>
+
+    <!-- Row containing title -->
     <div class="row">
         <div class="col text-center">
+            {% if self.custom_title %}
             <h1> {{ self.custom_title }} </h1>
+            {% else %}
+            <h1> {{ self.title }} </h1>
+            {% endif %}
         </div>
     </div>
+
+    <!-- Optional customisable block for article subtitle page -->
+    {% block article_subtitle %}
+    {% endblock %}
+
+    <!-- Row containing categories -->
     <div class="row">
         <div class="col text-center">
             <ul style='list-style: none;'>
@@ -26,6 +40,17 @@
             </ul>
         </div>
     </div>
+
+    <!-- customisable block for article page -->
+    {% block article_image %}
+    {% endblock %}
+
+    <!-- customisable block for video page -->
+
+    {% block video_blog %}
+    {% endblock %}
+
+    <!-- Rows containing streamfields -->
     <div class="row">
         <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
             {% for block in page.content %}
@@ -33,15 +58,19 @@
             {% endfor %}
         </div>
     </div>
+
+    <!-- Row containing authored by title -->
     <div class="row">
         <div class="col text-center">
             <h3>Authored by:</h3>
         </div>
     </div>
+
+    <!-- Row containing authors listing across screen -->
     <div class="row justify-content-center">
         {% for author in self.blog_authors.all %}
             {% image author.author.image fill-100x100 as img %}
-            <div class="col-2 text-center">
+            <div class="col-md-4 col-sm-6 text-center">
                 <ul style='list-style: none;'>
                     <img src="{{ img.url }}" class="rounded-circle" alt="{{ img.alt }}">
                     <li>{{ author.author.name }}</li>
@@ -51,7 +80,7 @@
                 </ul>
             </div>
         {% endfor %}
-
     </div>
+
 </div>
 {% endblock content %}
