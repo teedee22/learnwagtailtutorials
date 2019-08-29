@@ -24,5 +24,26 @@
                 {% endfor %}
             </div>
         </div>
+        <div class="row">
+            <div class="col text-center">
+                <h3>Authored by:</h3>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+                    {% for author in self.blog_authors.all %}
+                        {% image author.author.image fill-100x100 as img %}
+                        <div class="col-2 text-center">
+                            <ul style='list-style: none;'>
+                                <img src="{{ img.url }}" alt="{{ img.alt }}">
+                                <li>{{ author.author.name }}</li>
+                                    {% if author.author.website %}
+                                        <li><a href="{{ author.author.website }}">{{ author.author.name }}</a></li>
+                                    {% endif %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
 {% endblock content %}

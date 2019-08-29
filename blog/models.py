@@ -1,18 +1,35 @@
 from django.db import models
 from django.shortcuts import render
 
+from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
     MultiFieldPanel,
+    InlinePanel,
 )
-from wagtail.core.models import Page
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.snippets.models import register_snippet
 
 from streams import blocks
+
+
+class BlogAuthorsOrderable(Orderable):
+    """This allows us to select one or more blog authors from snippets"""
+
+    page = ParentalKey("blog.BlogDetailPage", related_name="blog_authors")
+    author = models.ForeignKey(
+        "blog.BlogAuthor",
+        on_delete=models.CASCADE,
+    )
+
+    panels = [
+        SnippetChooserPanel("author"),
+    ]
 
 
 class BlogAuthor(models.Model):
@@ -106,9 +123,7 @@ class BlogDetailPage(Page):
         help_text="Overwrites the default title",
     )
 
-    description = RichTextField(
-        features=[], blank=True, null=True
-    )
+    description = RichTextField(features=[], blank=True, null=True)
 
     blog_image = models.ForeignKey(
         "wagtailimages.Image",
@@ -132,5 +147,11 @@ class BlogDetailPage(Page):
         FieldPanel("custom_title"),
         ImageChooserPanel("blog_image"),
         FieldPanel("description"),
+        MultiFieldPanel(
+            [
+                InlinePanel("blog_authors", label="Author", min_num=1, max_num=10),
+            ],
+            heading="Author(s)"
+        ),
         StreamFieldPanel("content"),
     ]
