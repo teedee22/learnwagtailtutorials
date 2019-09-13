@@ -60,6 +60,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
+
+    'captcha',
+    'wagtailcaptcha',
 ]
 
 MIDDLEWARE = [
@@ -174,3 +177,9 @@ WAGTAIL_SITE_NAME = "tobyd"
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 BASE_URL = 'http://example.com'
+
+
+# Recaptcha Settings
+RECAPTCHA_PUBLIC_KEY = '6LcBX7gUAAAAAHnHeDeX8CQ_KUNgFaFvBszhzNju'
+RECAPTCHA_PRIVATE_KEY = '6LcBX7gUAAAAALEjWCR-GW1DLDPLzOVXIA6l01Ei'
+NOCAPTCHA = True
