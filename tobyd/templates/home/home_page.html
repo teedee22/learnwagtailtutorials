@@ -17,24 +17,41 @@
 
 
     <!-- Image Carousel -->
-    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div class="container">
+        <div class="col">
+    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
+    <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+    <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+  </ol>
         <div class="carousel-inner">
             {% for cycle in self.carousel_images.all %}
             {% image cycle.carousel_image fill-500x200 as img %}
                 <div class="carousel-item {% if forloop.counter == 1 %} active {% endif %}">
                     <img src="{{ img.url }}" class="d-block w-100" alt="{{ img.alt }}">
+                    <div class="carousel-caption d-block d-md-block bg-dark">
+                        <h5>{{ cycle.carousel_title }}</h5>
+                        <p>{{ cycle.carousel_text }}</p>
+                    </div>
                 </div>
             {% endfor %}
-        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
         </a>
-        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
         </a>
     </div>
-
+</div>
+</div>
+</div>
+<!-- Streamfields content -->
+{% for block in self.carousel_images.content.all %}
+    {% include_block block %}
+{% endfor %}
     <!-- Streamfields content -->
     {% for block in page.content %}
         {% include_block block %}

@@ -29,9 +29,28 @@ class HomePageCarouselImages(Orderable):
         on_delete=models.SET_NULL,  # When image is deleted, we don't want anything else to be deleted
         related_name="+",  # Not using a related name
     )
+    carousel_title = models.CharField(null=True, blank=True, max_length=100)
+    carousel_text = models.CharField(null=True, blank=True, max_length=250)
+
+    content = StreamField([("cta", blocks.CTABlock())], null=True, blank=True)
+
+    content = StreamField(
+        [
+            ("title_and_text", blocks.TitleAndTextBlock()),
+            ("full_richtext", blocks.RichTextBlock()),
+            ("simple_richtext", blocks.SimpleRichTextBlock()),
+            ("cards", blocks.CardBlock()),
+            ("cta", blocks.CTABlock()),
+            ("button", blocks.ButtonBlock()),
+        ],
+        null=True,
+        blank=True,)
 
     panels = [
-        ImageChooserPanel("carousel_image")
+        ImageChooserPanel("carousel_image"),
+        FieldPanel("carousel_title"),
+        FieldPanel("carousel_text"),
+        StreamFieldPanel("content"),
     ]
 
 
