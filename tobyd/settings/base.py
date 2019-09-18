@@ -63,6 +63,7 @@ INSTALLED_APPS = [
 
     'captcha',
     'wagtailcaptcha',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [

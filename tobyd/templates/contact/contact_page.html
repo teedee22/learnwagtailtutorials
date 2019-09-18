@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags widget_tweaks %}
 
 {% block content %}
-
+<div class="container">
+    <div class="col-6 mx-auto">
 <h1>{{ page.title }}</h1>
 
 <p>
@@ -11,7 +12,17 @@
 
 <form action="{% pageurl page %}" method="POST">
     {% csrf_token %}
+    <!--
     {{ form.as_ul }}
-    <input type="submit">
+    <input type="submit">-->
+    {% for field in form.visible_fields %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {% render_field field class+="form-control" %}
+        </div>
+    {% endfor %}
+<button type="submit" class="btn btn-primary" >Submit</button>
 </form>
+</div>
+</div>
 {% endblock %}
